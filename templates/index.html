@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>JS FireWallBuilder</title>
+        <link rel="stylesheet" href={{url_for( 'static', filename='css/style.css' )}}>
+        <link rel="stylesheet" href={{url_for( 'static', filename='css/fontawesome-all.min.css' )}}>
+    </head>
+    <body>
+        <div id="wrapper">
+            <main>
+                <div class="inputheader">Direction</div>
+                <div class="inputgroup">
+                    <div class="choosebutton">F</div>
+                    <div class="choosebutton">I</div>
+                    <div class="choosebutton">O</div>
+                </div>
+                <div class="inputheader">Protocolls</div>
+                <div class="inputgroup">
+                    <div class="choosebutton">TCP</div>
+                    <div class="choosebutton">UDP</div>
+                    <div class="choosebutton">ICMP</div>
+                </div>
+                <div class="inputheader">From</div>
+                <div class="inputgroup">
+                    <input id="ip_from" type="text">
+                </div>
+                <div class="inputheader">To</div>
+                <div class="inputgroup">
+                    <input id="ip_to" type="text">
+                </div>
+                <div class="inputheader">Ports</div>
+                <div class="inputgroup">
+                    <input id="ports" type="text">
+                </div>
+                <div class="inputheader">Comment</div>
+                <div class="inputgroup">
+                    <input id="comment" type="text">
+                </div>
+            </main>
+            <aside>
+                <h3>Current Firewall</h3>
+                <table>
+                    <tr>
+                        <th>Nr</th>
+                        <th>Directions</th>
+                        <th>Protocolls</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Ports</th>
+                        <th>Comment</th>
+                    </tr>
+                </table>
+            </aside>            
+        </div>
+    </body>
+</html>

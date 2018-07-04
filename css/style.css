@@ -1,0 +1,81 @@
+:root{
+    --midnightblue: #1e1f26;
+    --indigoink: #283655;
+    --blueberry: #4d648d;
+    --periwinkle: #d0e1f9;
+}
+html{
+    background: var(--blueberry);
+    font-size: 16px;
+}
+main, aside{
+    box-shadow: 4px 4px;
+    padding: 5px;
+    background: var(--periwinkle);
+}
+#wrapper{
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.inputheader{
+    box-sizing: border-box;
+    border: medium solid var(--indigoink);
+    border-radius: 0 30px 0 0;
+    background: var(--indigoink);
+    color: white;
+    width: 100%;
+    height: 30px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+.inputgroup{
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding: 4px;
+    background: var(--blueberry);
+    border-radius: 0 0 10px 10px;
+}
+.choosebutton{
+    display: inline-block;
+    text-align: center;
+    margin: auto;
+    height: 30px;
+    width: 60px;
+    background: var(--periwinkle);
+    border-radius: 15px;
+}
+.choosebutton:hover{
+    background: var(--midnightblue);
+    color: white;
+}
+h3{
+    text-align: center;
+}
+main{
+    flex: 3;
+}
+aside{
+    flex: 6;
+}
+table{
+    margin: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+tr:nth-child(0){
+    font-weight: bold;
+    border-bottom: 2px solid black;
+}
+tr:hover:not(nth-child(0)){
+    background: var(--rulehovercolor);
+}
+input{
+    display: block;
+    width: 100%;
+    height: 1.5rem;
+    font-size: 1.5rem;
+}
