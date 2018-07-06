@@ -1,0 +1,46 @@
+#!/bin/sh
+
+IPT="/sbin/iptables"
+
+IU="/sbin/iptables -A INPUT -p udp -m udp"
+IT="/sbin/iptables -A INPUT -p tcp -m tcp"
+II="/sbin/iptables -A INPUT -p icmp -m icmp --icmp-type 8/0"
+
+FU="/sbin/iptables -A FORWARD -p udp -m udp"
+FT="/sbin/iptables -A FORWARD -p tcp -m tcp"
+FI="/sbin/iptables -A FORWARD -p icmp -m icmp --icmp-type 8/0"
+
+OU="/sbin/iptables -A OUTPUT -p udp -m udp"
+OT="/sbin/iptables -A OUTPUT -p tcp -m tcp"
+OI="/sbin/iptables -A OUTPUT -p icmp -m icmp --icmp-type 8/0"
+
+MAC="-m mac --mac-source "
+
+MP="-m multiport"
+
+R="-m conntrack --ctstate NEW -j ACCEPT"
+
+modprobe ip_conntrack 
+modprobe ip_conntrack_ftp
+
+$IPT -F
+$IPT -X
+$IPT -t nat -F
+$IPT -t nat -X
+$IPT -t mangle -F
+$IPT -t mangle -X
+
+$IPT -P INPUT DROP
+$IPT -P OUTPUT DROP
+$IPT -P FORWARD DROP
+
+$IPT -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 
+$IPT -A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 
+$IPT -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+
+ echo "alles auf localhost"
+$IPT -A INPUT -i lo $R
+$IPT -A OUTPUT -o lo $R
+
+# End of prefix

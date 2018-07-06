@@ -1,0 +1,8 @@
+# Begin of suffix
+
+ echo "catch all"
+$IPT -A INPUT -j DROP
+$IPT -A OUTPUT -j DROP
+$IPT -A FORWARD -j DROP
+
+/sbin/sysctl -w net.ipv4.ip_forward=1
