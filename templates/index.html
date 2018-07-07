@@ -5,15 +5,16 @@
         <title>JS FireWallBuilder</title>
         <link rel="stylesheet" href={{url_for( 'static', filename='css/style.css' )}}>
         <link rel="stylesheet" href={{url_for( 'static', filename='css/fontawesome-all.min.css' )}}>
+        <script src={{url_for( 'static', filename='js/helpbox.js' )}} defer></script>
     </head>
     <body>
         <div id="wrapper">
             <main>
                 <div class="inputheader">Direction</div>
                 <div class="inputgroup">
-                    <div class="choosebutton">F</div>
-                    <div class="choosebutton">I</div>
-                    <div class="choosebutton">O</div>
+                    <div id="btn_forward" class="choosebutton">F</div>
+                    <div id="btn_input" class="choosebutton">I</div>
+                    <div id="btn_output" class="choosebutton">O</div>
                 </div>
                 <div class="inputheader">Protocolls</div>
                 <div class="inputgroup">
@@ -51,7 +52,13 @@
                         <th>Comment</th>
                     </tr>
                 </table>
-            </aside>            
+            </aside>
+            <footer>
+                <i class="fas fa-cogs"></i>
+            </footer>
+            <div id="helpbox">
+                <i class="fas fa-question"></i>
+            </div>
         </div>
     </body>
 </html>

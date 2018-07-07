@@ -8,16 +8,40 @@ html{
     background: var(--blueberry);
     font-size: 16px;
 }
-main, aside{
+main, aside, footer, #helpbox{
     box-shadow: 4px 4px;
     padding: 5px;
     background: var(--periwinkle);
 }
-#wrapper{
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+@media (max-width: 569px){
+    main, aside, footer, #helpbox{
+        margin-bottom: 20px;
+    }
 }
+@media (min-width: 570px){
+    main{
+        grid-column: 1;
+        grid-row: 1 / 4;
+    }
+    aside{
+        grid-column: 2 / 7;
+        grid-row: 1 / 4;
+    }
+    footer{
+        grid-column: 1 / 5;
+        grid-row: 4;
+    }
+    #helpbox{
+        grid-column: 5 / 7;
+        grid-row: 4;    
+    }
+    #wrapper{
+        display: grid;
+        grid-gap: 20px;
+        /*grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));*/
+    }
+}
+
 .inputheader{
     box-sizing: border-box;
     border: medium solid var(--indigoink);
