@@ -67,5 +67,6 @@ class Rule:
         yield command % ( d_flag, p_flag )
 
 if __name__ == "__main__":
-  r = [ 200, 900, 8080 ]
-  print( r.__str__() )
+  r = Rule( 7, 7, None, None, None, None )
+  for command in r.toCommandString():
+    print( command )

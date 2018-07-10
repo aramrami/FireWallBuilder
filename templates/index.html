@@ -6,6 +6,7 @@
         <link rel="stylesheet" href={{url_for( 'static', filename='css/style.css' )}}>
         <link rel="stylesheet" href={{url_for( 'static', filename='css/fontawesome-all.min.css' )}}>
         <script src={{url_for( 'static', filename='js/helpbox.js' )}} defer></script>
+        <script src={{url_for( 'static', filename='js/firewall.js' )}} defer></script>
     </head>
     <body>
         <div id="wrapper">
@@ -54,7 +55,8 @@
                 </table>
             </aside>
             <footer>
-                <i class="fas fa-cogs"></i>
+                <div id="updateRow" class="toolbutton"><i class="fas fa-check"></i></div>
+                <div id="compile" class="toolbutton"><i class="fas fa-cogs"></i></div>
             </footer>
             <div id="helpbox">
                 <i class="fas fa-question"></i>
