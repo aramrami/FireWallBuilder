@@ -1,4 +1,50 @@
 const rules = [];
+const inputs = {
+    "PORTS" : /^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))$/,
+    "BITMASK" : /^[0-7]$"/,
+    "IPV4" : /^TODO$/
+};
+
+class BitEntry{
+    constructor( value ){
+        this.value  = value;
+        this.active = false;
+    }
+    toggle(){
+        this.active = !this.active;
+    }
+}
+
+class Bitmask{
+    constructor(){        
+        this.NONE = new BitEntry( 0 );        
+        let bit = 0;
+        for ( let argument of arguments ){
+            this[argument] = new BitEntry( Math.pow( 2, bit++ ) );
+        }
+    }
+    build( number ){
+        let bit = 0;
+        for ( let property in this ) {
+            if ( this.hasOwnProperty( property ) && ( this[property].value & Math.pow( 2, bit++ ) == this[property].value) ) {
+                this[property].toggle();
+            }
+        }
+    }
+    getValue(){
+        let val = 0;
+        for ( let property in this ) {
+            if ( this.hasOwnProperty( property ) && this[property].active ) {
+                val += this[property].value;
+            }
+        }
+        return val;
+    }
+}
+
+var test = new Bitmask( "TCP", "UDP", "ICMP" );
+test.build( 7 );
+console.log( test.getValue() );
 
 class Rule{
     constructor( direction, protocol, ipFrom, ipTo, ports, comment ){
@@ -50,6 +96,7 @@ function newRule(){
     
     clearTable( table );
     rules.push( createRule() );
+    console.log( JSON.stringify( rules ) );
     buildTable();
 }
 
