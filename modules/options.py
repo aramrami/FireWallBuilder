@@ -1,5 +1,13 @@
 from enum import Flag, auto
 
+def mapJsonToRule( data ):
+  directionMask = 0
+  protocolMask = 0
+  rules = [ Rule( rule["direction"], rule["protocol"], rule["ipFrom"], rule["ipTo"], rule["ports"], rule["comment"] ) for rule in data ]
+  for rule in rules:
+    for command in rule.toCommandString():      
+      print( command )
+
 class Direction( Flag ):
   NONE    = 0
   FORWARD = auto()
@@ -61,10 +69,10 @@ class Rule:
     self.ports      = ports
 
   def toCommandString( self ):
-    command = "$%s%s blub"
+    command = "$%s%s %s %s"
     for p_flag in self.protocols.toCommandString():
       for d_flag in self.directions.toCommandString():
-        yield command % ( d_flag, p_flag )
+        yield command % ( d_flag, p_flag, self.ip_from, self.ip_to )
 
 if __name__ == "__main__":
   r = Rule( 7, 7, None, None, None, None )

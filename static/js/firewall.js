@@ -15,19 +15,22 @@ class BitEntry{
     }
 }
 
-class Bitmask{
-    constructor(){        
+class BitMask{
+    constructor( keypack ){        
         this.NONE = new BitEntry( 0 );        
         let bit = 0;
-        for ( let argument of arguments ){
-            this[argument] = new BitEntry( Math.pow( 2, bit++ ) );
+        for ( let keyname of keypack ){
+            this[keyname] = new BitEntry( Math.pow( 2, bit++ ) );
         }
     }
     build( number ){
         let bit = 0;
         for ( let property in this ) {
-            if ( this.hasOwnProperty( property ) && ( this[property].value & Math.pow( 2, bit++ ) == this[property].value) ) {
-                this[property].toggle();
+            if ( this.hasOwnProperty( property ) && this[property].value != 0 ){
+                if ( ( number & Math.pow( 2, bit ) ) == Math.pow( 2, bit ) ) {
+                    this[property].toggle(); 
+                }
+                bit += 1;
             }
         }
     }
@@ -40,21 +43,54 @@ class Bitmask{
         }
         return val;
     }
+    getActiveKeys(){
+        let keystring = "";
+        for ( let property in this ) {
+            if ( this.hasOwnProperty( property ) && this[property].active ) {
+                keystring += `${property}, `;
+            }
+        }
+        if ( 0 < keystring.length ){
+            keystring = keystring.slice( 0, -2 );
+        }
+        return keystring;
+    }
+    toggleKey( keyname ){
+        this[keyname].toggle();
+    }
 }
 
-var test = new Bitmask( "TCP", "UDP", "ICMP" );
-test.build( 7 );
-console.log( test.getValue() );
+class BitMaskButtonGroup{
+    constructor( domID ){
+        let ids = [];
+        document.querySelector( `#${domID}` ).childNodes.forEach( element => {
+            if ( element.id ){
+                ids.push( element.id );
+            }            
+        } );
+        this.bitmask = new BitMask( ids );
+        
+        var closure = this.bitmask;
+        ids.forEach( id => {
+            document.getElementById( id ).addEventListener( "click", event => {
+                closure.toggleKey( id );
+                event.target.classList.toggle( "choosebuttonactive" );
+            } );
+        } );
+    }
+}
 
 class Rule{
     constructor( direction, protocol, ipFrom, ipTo, ports, comment ){
         this.number    = -1;
-        this.direction = direction;
-        this.protocol  = protocol;
+        this.direction = new BitMask( ["FORWARD", "INPUT", "OUTPUT"] );
+        this.direction.build( direction );
+        this.protocol  = new BitMask( ["TCP", "UDP", "ICMP"] );
+        this.protocol.build( protocol );
         this.ipFrom    = ipFrom;
         this.ipTo      = ipTo;
         this.ports     = ports;
-        this.comment   = comment;        
+        this.comment   = comment;
     }
     toHTML(){
         let tableRow = document.createElement( "tr" );
@@ -63,7 +99,11 @@ class Rule{
         for ( let property in this ) {
             if ( this.hasOwnProperty( property ) ) {
                 let tabledata = document.createElement( "td" );
-                tabledata.innerHTML = this[property];
+                if ( this[property] instanceof BitMask ){
+                    tabledata.innerHTML = this[property].getActiveKeys();
+                } else {
+                    tabledata.innerHTML = this[property];
+                }
                 tableRow.appendChild( tabledata );
             }
         }
@@ -78,12 +118,22 @@ class Rule{
         
         return tableRow;
     }
+    toLeightWeightObject(){
+        return {
+            "direction" : this.direction.getValue(),
+            "protocol" : this.direction.getValue(),
+            "ipFrom" : this.ipFrom,
+            "ipTo" : this.ipTo,
+            "ports" : this.ports,
+            "comment" : this.comment
+        };
+    }
 }
 
 function createRule(){
     return new Rule(
-        "TODO",
-        "TODO",
+        buttonGroupDirections.bitmask.getValue(),
+        buttonGroupProtocols.bitmask.getValue(),
         document.getElementById( "ip_from" ).value,
         document.getElementById( "ip_to" ).value,
         document.getElementById( "ports" ).value,
@@ -96,7 +146,6 @@ function newRule(){
     
     clearTable( table );
     rules.push( createRule() );
-    console.log( JSON.stringify( rules ) );
     buildTable();
 }
 
@@ -122,6 +171,26 @@ function buildTable(){
     } );
 }
 
+function sendFireWall(){
+    let list = []
+    rules.forEach( element => {
+        list.push( element.toLeightWeightObject() );
+    } );
+    let json = JSON.stringify( list );
+    console.log( list );
+    let request = new XMLHttpRequest();
+    
+    request.open( "POST", "./compiler", true );
+    request.setRequestHeader( "Content-type", "application/json" );
+    request.onload = () => {
+        console.log( request.responseText );
+    };
+    request.send( json );
+}
+
+const buttonGroupDirections = new BitMaskButtonGroup( "group_directions" );
+const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
 ( function init(){
     document.getElementById( "updateRow" ).onclick = newRule;
+    document.getElementById( "compile" ).onclick = sendFireWall;
 } )();
