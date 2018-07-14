@@ -92,13 +92,13 @@ footer{
     color: white;
 }
 .choosebuttonactive{
-    border: 5px solid rgb(170,235,170) !important;
+    border: 5px solid rgb(160,225,160) !important;
 }
-.invalid{
-    background: rgb(255,230,230);
+.valid{
+    background: rgb(230,255,230) !important;
 }
 input[type='text']{
-    background: rgb(230,255,230);
+    background: rgb(255,230,230);
 }
 h3{
     text-align: center;

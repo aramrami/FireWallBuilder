@@ -3,6 +3,7 @@ from enum import Flag, auto
 def mapJsonToRule( data ):
   directionMask = 0
   protocolMask = 0
+  print( data )
   rules = [ Rule( rule["direction"], rule["protocol"], rule["ipFrom"], rule["ipTo"], rule["ports"], rule["comment"] ) for rule in data ]
   for rule in rules:
     for command in rule.toCommandString():      

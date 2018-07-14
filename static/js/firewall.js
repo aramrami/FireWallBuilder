@@ -1,6 +1,6 @@
 const rules = [];
 const inputs = {
-    "PORTS" : /^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))$/,
+    "PORTS" : /^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))([,\-](0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))){0,9}$/,
     "BITMASK" : /^[0-7]$"/,
     "IPV4" : /^TODO$/
 };
@@ -188,9 +188,27 @@ function sendFireWall(){
     request.send( json );
 }
 
+function validate( input, regex ){
+    if ( regex.test( input.value ) ){
+        input.classList.add( "valid" );
+    } else {
+        input.classList.remove( "valid" );
+    }
+}
+
 const buttonGroupDirections = new BitMaskButtonGroup( "group_directions" );
 const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
+
 ( function init(){
     document.getElementById( "updateRow" ).onclick = newRule;
     document.getElementById( "compile" ).onclick = sendFireWall;
+    document.getElementById( "ip_from" ).addEventListener( "keyup", event => {
+        validate( event.target, inputs["IPV4"] );
+    } );
+    document.getElementById( "ip_to" ).addEventListener( "keyup", event => {
+        validate( event.target, inputs["IPV4"] );
+    } );
+    document.getElementById( "ports" ).addEventListener( "keyup", event => {
+        validate( event.target, inputs["PORTS"] );
+    } );
 } )();
