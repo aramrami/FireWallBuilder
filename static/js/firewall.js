@@ -1,8 +1,8 @@
 const rules = [];
 const inputs = {
-    "PORTS" : /^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))([,\-](0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))){0,9}$/,
+    "PORTS" : /^(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))(,(0|[1-9][0-9]{0,3}|[1-5][0-9]{4}|6([0-4][0-9]{3}|5([0-4][0-9]{2}|5([0-2][0-9]|3[0-5]))))){0,14}$/,
     "BITMASK" : /^[0-7]$"/,
-    "IPV4" : /^TODO$/
+    "IPV4" : /^([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))(\.([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))){3}((:([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))(\.([1-9]?[0-9]|1[0-9][0-9]|2([0-4][0-9]|5[0-5]))){3})|\/([1-2]?[0-9]|3[0-2]))?$/
 };
 
 class BitEntry{
@@ -78,6 +78,9 @@ class BitMaskButtonGroup{
             } );
         } );
     }
+    getValue(){
+        return this.bitmask.getValue();
+    }
 }
 
 class Rule{
@@ -142,11 +145,16 @@ function createRule(){
 }
 
 function newRule(){
-    let table = document.querySelector( "table" );
+    if ( isValidRule() ){
+        let table = document.querySelector( "table" );
+        
+        clearTable( table );
+        rules.push( createRule() );
+        buildTable();
+    } else {
+        displayMessage( "Blub" );
+    }
     
-    clearTable( table );
-    rules.push( createRule() );
-    buildTable();
 }
 
 function deleteRule( rule ){
@@ -196,6 +204,26 @@ function validate( input, regex ){
     }
 }
 
+function isValidRule(){
+    if ( !inputs["IPV4"].test( document.getElementById( "ip_from" ).value ) ||
+         !inputs["IPV4"].test( document.getElementById( "ip_to" ).value ) ||
+         !inputs["PORTS"].test( document.getElementById( "ports" ).value ) ||
+         buttonGroupDirections.getValue() <= 0 ||
+         buttonGroupProtocols.getValue() <= 0 ){
+        return false;
+    }
+    return true;
+}
+
+function displayMessage( text ){
+    document.getElementById( "messageText" ).innerHTML = text;
+    document.getElementById( "messageWrapper" ).style.visibility = "visible";
+}
+
+function hideMessage(){
+    document.getElementById( "messageWrapper" ).style.visibility = "hidden";
+}
+
 const buttonGroupDirections = new BitMaskButtonGroup( "group_directions" );
 const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
 
@@ -211,4 +239,5 @@ const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
     document.getElementById( "ports" ).addEventListener( "keyup", event => {
         validate( event.target, inputs["PORTS"] );
     } );
+    document.getElementById( "hideMessage" ).onclick = hideMessage;
 } )();
