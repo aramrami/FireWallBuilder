@@ -145,14 +145,16 @@ function createRule(){
 }
 
 function newRule(){
-    if ( isValidRule() ){
+    let validationObj = isValidRule();
+
+    if ( validationObj[0] ){
         let table = document.querySelector( "table" );
         
         clearTable( table );
         rules.push( createRule() );
         buildTable();
     } else {
-        displayMessage( "Blub" );
+        displayMessage( "Some rule options are not valid", validationObj.slice( 1 ) );
     }
     
 }
@@ -205,18 +207,40 @@ function validate( input, regex ){
 }
 
 function isValidRule(){
-    if ( !inputs["IPV4"].test( document.getElementById( "ip_from" ).value ) ||
-         !inputs["IPV4"].test( document.getElementById( "ip_to" ).value ) ||
-         !inputs["PORTS"].test( document.getElementById( "ports" ).value ) ||
-         buttonGroupDirections.getValue() <= 0 ||
-         buttonGroupProtocols.getValue() <= 0 ){
-        return false;
+    let validationObj = [ true ];
+    
+    if ( !inputs["IPV4"].test( document.getElementById( "ip_from" ).value ) ){
+        validationObj[0] = false;
+        validationObj.push( "Invalid source ip" );
     }
-    return true;
+    if ( !inputs["IPV4"].test( document.getElementById( "ip_to" ).value ) ){
+        validationObj[0] = false;
+        validationObj.push( "Invalid destination ip" );
+    }
+    if ( !inputs["PORTS"].test( document.getElementById( "ports" ).value ) ){
+        validationObj[0] = false;
+        validationObj.push( "Invalid ports" );
+    }
+    if ( buttonGroupDirections.getValue() <= 0 ){
+        validationObj[0] = false;
+        validationObj.push( "Choose at least one direction" );
+    }
+    if ( buttonGroupProtocols.getValue() <= 0 ){
+        validationObj[0] = false;
+        validationObj.push( "Choose at least one protocol" );
+    }
+    return validationObj;
 }
 
-function displayMessage( text ){
-    document.getElementById( "messageText" ).innerHTML = text;
+function displayMessage( header, texts ){
+    let message = "";
+    
+    for( let text of texts ){
+        message += `${text}<br>`;
+    }
+    
+    document.getElementById( "messageHeader" ).innerHTML = header;
+    document.getElementById( "messageText" ).innerHTML = message;
     document.getElementById( "messageWrapper" ).style.visibility = "visible";
 }
 

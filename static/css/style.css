@@ -1,15 +1,24 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto');
-
 :root{
-    --midnightblue: #1e1f26;
-    --indigoink: #283655;
-    --blueberry: #4d648d;
-    --periwinkle: #d0e1f9;
-    --toolbuttonsize: 50px;
+    --background_main: #33333d;
+    --background_dark: #27272f;
+    --background_fragment: #373740;
+    --background_black: #1e1e1e;
+    --background_grey: #424250;
+    --green: #1eb980;
+    --dark_green: #045d56;
+    --orange: #ff6859;
+    --yellow: #ffcf44;
+    --purple: #b15dff;
+    --blue: #72deff;
+
+    --toolbuttonsize: 55px;
+    --colorbarwidth: 3px;
 }
 html{
-    background: var(--blueberry);
-    font-size: 16px;
+    background: var(--background_grey);
+    font-size: 18px;
+    font-family: 'Roboto Condensed', sans-serif;
+    color: white;
 }
 body{
     font-family: 'Roboto', sans-serif;
@@ -17,9 +26,9 @@ body{
     margin: 0;
 }
 main, aside, footer, #helpbox{
-    box-shadow: 5px 5px;
+    box-shadow: 5px 5px var(--background_dark);
     padding: 8px;
-    background: var(--periwinkle);
+    background: var(--background_fragment);
 }
 footer{
     display: flex;
@@ -28,6 +37,9 @@ footer{
     main, aside, footer, #helpbox{
         margin-bottom: 20px;
     }
+}
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Eczar', serif;
 }
 @media (min-width: 570px){
     main{
@@ -55,52 +67,70 @@ footer{
 
 .inputheader{
     box-sizing: border-box;
-    border: medium solid var(--indigoink);
     border-radius: 0 30px 0 0;
-    background: var(--indigoink);
+    background: var(--background_dark);
     color: white;
     width: 100%;
-    height: 30px;
+    height: 40px;
+    line-height: 40px;
     vertical-align: middle;
     margin-right: 8px;
+    padding-left: 8px;
 }
 .inputgroup{
     display: flex;
     box-sizing: border-box;
     width: 100%;
     margin-right: 8px;
-    margin-bottom: 8px;
-    padding: 4px;
+    margin-bottom: 12px;
     background: var(--blueberry);
     border-radius: 0 0 10px 10px;
 }
 .choosebutton{
     display: inline-block;
+    box-sizing: border-box;
     text-align: center;
     margin: auto;
-    height: 25px;
-    line-height: 25px;
-    width: 60px;
+    height: 40px;
+    line-height: 40px;
+    width: 80px;
     background: var(--periwinkle);
-    border: 5px solid var(--periwinkle);
+    border: 2px solid var(--periwinkle);
     border-radius: 20px;
 }
 .choosebutton:hover{
     cursor: pointer;
-    background: var(--midnightblue);
-    border-color: var(--midnightblue);
-    color: white;
+    background: white;
+    border-color: white;
+    color: var(--background_black);
 }
 .choosebuttonactive{
-    border: 5px solid rgb(160,225,160) !important;
+    border: 3px solid var(--green) !important;
+    line-height: 34px;
 }
 .valid{
-    background: rgb(230,255,230) !important;
+    border-left: var(--colorbarwidth) solid var(--green) !important;
 }
 input[type='text']{
-    background: rgb(255,230,230);
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+    border: none;
+    border-left: var(--colorbarwidth) solid var(--orange);
+    background: var(--background_grey);
+    text-align: center;
+    color: white;
 }
-h3{
+input[type='text']#comment{
+    border-left: var(--colorbarwidth) solid transparent;
+}
+input{
+    display: block;
+    width: 100%;
+    height: 1.2rem;
+    font-size: 1.2rem;
+}
+h2{
     text-align: center;
 }
 main{
@@ -121,32 +151,25 @@ tr:not(:nth-child(1)){
 }
 tr:nth-child(1){
     font-weight: bold;
-    border-bottom: 2px solid var(--midnightblue);
+    border-bottom: var(--colorbarwidth) solid var(--green);
 }
 tr:not(:nth-child(1)):hover{
-    background: var(--blueberry);
+    background: var(--background_black);
 }
 tr:nth-child(even){
-    background: white;
+    background: var(--background_dark);
 }
 .deletebutton:hover{
     cursor: pointer;
-    background: var(--midnightblue);
-    color: white;
-}
-input{
-    display: block;
-    width: 100%;
-    height: 1.5rem;
-    font-size: 1.5rem;
+    background: white;
+    color: var(--background_black);
 }
 .toolbutton{
     margin: auto 5px;
-    font-size: 1.7rem;
+    font-size: 1.5rem;
     text-align: center;
     line-height: var(--toolbuttonsize);
-    color: black;
-    background: var(--blueberry);
+    background: var(--background_dark);
     box-sizing: border-box;
     border-radius: 50%;
     flex: 1;
@@ -158,7 +181,11 @@ input{
 .toolbutton:hover{
     cursor: pointer;
     color: white;
-    background: var(--midnightblue);
+    background: white;
+    color: var(--background_dark);
+}
+#messageHeader{
+    border-bottom: var(--colorbarwidth) solid var(--orange);
 }
 #helpbox{
     text-align: center;
@@ -167,13 +194,15 @@ input{
     margin-bottom: 5px;
     padding-bottom: 5px;
     font-size: 1.2rem;
-    border-bottom: medium solid var(--indigoink);
-    color: var(--indigoink);
+    border-bottom: var(--colorbarwidth) solid var(--yellow);
     width: 100%;
 }
 #helptext{
     margin: auto;
     max-width: 200px;
+    min-width: 200px;
+    min-height: 100px;
+    max-height: 100px;
 }
 #messageWrapper{
     visibility: hidden;
@@ -185,12 +214,20 @@ input{
     background: rgba(30,30,30,0.8)
 }
 #message{
-    box-shadow: 5px 5px;
+    box-shadow: 5px 5px var(--background_black);
     margin-top: 15%;
     margin-left: auto;
     margin-right: auto;
     padding: 8px;
-    background: var(--periwinkle);
+    background: var(--background_fragment);
     width: 92%;
-    height: 80px;
+    text-align: center;
+}
+#messageText{
+    margin-bottom: 8px;
+    margin-top: 8px;
+    font-size: 1.2rem;
+}
+#message .toolbutton{
+    margin: auto;
 }
