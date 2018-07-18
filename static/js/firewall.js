@@ -117,6 +117,9 @@ class Rule{
         deletebutton.onclick = function(){
             deleteRule( me );
         };
+        deletebutton.addEventListener( "mouseover", e => {
+            document.getElementById( "helptext" ).innerHTML = texts["delete"];
+        } );
         tableRow.appendChild( deletebutton );
         
         return tableRow;
@@ -193,9 +196,36 @@ function sendFireWall(){
     request.open( "POST", "./compiler", true );
     request.setRequestHeader( "Content-type", "application/json" );
     request.onload = () => {
-        console.log( request.responseText );
+        switchMainAndScript( request.responseText );
     };
     request.send( json );
+}
+
+function switchMainAndScript( script = null ){
+    console.log( script );
+    let mainVisibility   = "block";
+    let mainToolbar      = "flex";
+    let scriptVisibility = "none";
+    let scriptToolbar    = "none";
+    let scripttext       = "";
+    
+    if ( script != null ){
+        mainVisibility   = "none";
+        mainToolbar      = "none";
+        scriptVisibility = "block";
+        scriptToolbar    = "flex";
+        scripttext = script;
+    }    
+
+    document.querySelectorAll( ".main" ).forEach( element => {
+        element.style.display = mainVisibility;
+    } );
+    document.querySelector( "footer" ).style.display = mainToolbar;
+    document.querySelectorAll( ".script" ).forEach( element => {
+        element.style.display = scriptVisibility;
+    } );
+    document.querySelector( "nav" ).style.display = scriptToolbar;
+    document.getElementById( "script" ).innerHTML = scripttext;
 }
 
 function validate( input, regex ){
@@ -248,6 +278,11 @@ function hideMessage(){
     document.getElementById( "messageWrapper" ).style.visibility = "hidden";
 }
 
+function scriptToClipboard(){
+    //TODO
+    document.execCommand('copy');
+}
+
 const buttonGroupDirections = new BitMaskButtonGroup( "group_directions" );
 const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
 
@@ -264,4 +299,7 @@ const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
         validate( event.target, inputs["PORTS"] );
     } );
     document.getElementById( "hideMessage" ).onclick = hideMessage;
+    document.getElementById( "closeScript" ).onclick = () => { 
+        switchMainAndScript( null )
+    };
 } )();

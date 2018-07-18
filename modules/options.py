@@ -1,13 +1,12 @@
 from enum import Flag, auto
+from modules.sanitizer import Patterns
 
 def mapJsonToRule( data ):
-  directionMask = 0
-  protocolMask = 0
-  print( data )
   rules = [ Rule( rule["direction"], rule["protocol"], rule["ipFrom"], rule["ipTo"], rule["ports"], rule["comment"] ) for rule in data ]
   for rule in rules:
     for command in rule.toCommandString():      
       print( command )
+  return rules
 
 class Direction( Flag ):
   NONE    = 0
@@ -70,12 +69,39 @@ class Rule:
     self.ports      = ports
 
   def toCommandString( self ):
-    command = "$%s%s %s %s"
+    multiport = ""
+    dport     = "dport"
+    command   = "$%s%s %s -s %s -d %s --%s %s $R\n"
+    
+    if Patterns.COMMA.value.search( self.ports ):
+      multiport = "$MP"
+      dport     = "dports"
+    
     for p_flag in self.protocols.toCommandString():
       for d_flag in self.directions.toCommandString():
-        yield command % ( d_flag, p_flag, self.ip_from, self.ip_to )
+        yield command % ( d_flag, p_flag, multiport, self.ip_from, self.ip_to, dport, self.ports )
+
+  def __str__( self ):
+    output = "# %s\n" % self.comment
+    for command in self.toCommandString():
+      output += command
+    return output
+  
+def loadTemplate( url ):
+  buffer = ""
+  with open( url, "r" ) as file:
+    for line in file:
+      buffer += line
+  return buffer
+
+def buildFirewall( rules ):
+  prefix = loadTemplate( "./modules/prefix.fw" )
+  suffix = loadTemplate( "./modules/suffix.fw" )
+  custom = ""
+  for rule in rules:
+    custom += rule.__str__()
+  return "%s\n%s\n%s" % ( prefix, custom, suffix )
 
 if __name__ == "__main__":
-  r = Rule( 7, 7, None, None, None, None )
-  for command in r.toCommandString():
-    print( command )
+  flag = Direction.FORWARD | Direction.INPUT
+  print( buildFirewall( [] ) )

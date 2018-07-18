@@ -1,5 +1,6 @@
 from flask import render_template, Flask, request, abort
-from modules.options import mapJsonToRule
+from modules.options import mapJsonToRule, buildFirewall
+from modules.sanitizer import isValidRule
 
 app = Flask(__name__)
 
@@ -25,8 +26,12 @@ def index():
 @app.route( "/compiler", methods=["POST"] )
 @ContentLength( 4096 )
 def compiler():
-    mapJsonToRule( request.get_json() )
-    return "Answer"
+    rules = mapJsonToRule( request.get_json() )
+    if isValidRule( rules ):
+        outputScript = buildFirewall( rules )
+    else:
+        abort( 500 )
+    return outputScript
 
 if __name__ == "__main__":
     #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
