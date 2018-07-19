@@ -190,7 +190,7 @@ function sendFireWall(){
         list.push( element.toLeightWeightObject() );
     } );
     let json = JSON.stringify( list );
-    console.log( list );
+    //console.log( list );
     let request = new XMLHttpRequest();
     
     request.open( "POST", "./compiler", true );
@@ -202,7 +202,7 @@ function sendFireWall(){
 }
 
 function switchMainAndScript( script = null ){
-    console.log( script );
+    //console.log( script );
     let mainVisibility   = "block";
     let mainToolbar      = "flex";
     let scriptVisibility = "none";
@@ -279,8 +279,13 @@ function hideMessage(){
 }
 
 function scriptToClipboard(){
-    //TODO
-    document.execCommand('copy');
+    document.getElementById( "script" ).select();
+    document.execCommand( "copy" );
+}
+
+function downloadScript(){
+    let payload = document.getElementById( "script" ).value;        
+    window.open( "data:application/txt," + encodeURIComponent( payload ), "_self" );
 }
 
 const buttonGroupDirections = new BitMaskButtonGroup( "group_directions" );
@@ -299,6 +304,8 @@ const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
         validate( event.target, inputs["PORTS"] );
     } );
     document.getElementById( "hideMessage" ).onclick = hideMessage;
+    document.getElementById( "saveScript" ).onclick = downloadScript;
+    document.getElementById( "scriptClipboard" ).onclick = scriptToClipboard;
     document.getElementById( "closeScript" ).onclick = () => { 
         switchMainAndScript( null )
     };

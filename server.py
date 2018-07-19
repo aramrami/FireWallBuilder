@@ -1,4 +1,4 @@
-from flask import render_template, Flask, request, abort
+from flask import render_template, Flask, request, abort, make_response
 from modules.options import mapJsonToRule, buildFirewall
 from modules.sanitizer import isValidRule
 

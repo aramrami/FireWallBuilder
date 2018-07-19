@@ -38,6 +38,9 @@ footer, nav{
     main, aside, footer, nav, #helpbox, #firewallheader, #toolbarheader, #script{
         margin-bottom: 20px;
     }
+    textarea{
+        width: 100%;
+    }
 }
 h1, h2, h3, h4, h5, h6{
     font-family: 'Eczar', serif;
@@ -111,8 +114,7 @@ h1, h2, h3, h4, h5, h6{
     height: 40px;
     line-height: 40px;
     width: 80px;
-    background: var(--periwinkle);
-    border: 2px solid var(--periwinkle);
+    background: var(--background_grey);
     border-radius: 20px;
 }
 .choosebutton:hover{
@@ -251,6 +253,9 @@ tr:nth-child(even){
 .script, nav{
     display: none;
 }
-pre{
+textarea{
     margin: 0;
+    border: none;
+    color: inherit;
+    resize: vertical;
 }

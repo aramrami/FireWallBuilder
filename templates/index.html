@@ -12,7 +12,7 @@
     </head>
     <body>
         <div id="wrapper">
-            <main>
+            <main class="main">
                 <div class="inputheader">Direction</div>
                 <div id="group_directions" class="inputgroup">
                     <div id="btn_forward" class="choosebutton">F</div>
@@ -42,8 +42,10 @@
                     <input id="comment" type="text">
                 </div>
             </main>
-            <aside>
+            <div class="main" id="firewallheader">
                 <h2>Current Firewall</h2>
+            </div>
+            <aside class="main">                
                 <table>
                     <tr>
                         <th>Nr</th>
@@ -56,21 +58,32 @@
                     </tr>
                 </table>
             </aside>
+            <div id="toolbarheader">
+                <h2>Commands</h2>
+            </div>
             <footer>
                 <div id="updateRow" class="toolbutton"><i class="fas fa-check"></i></div>
+                <div id="saveFirewall" class="toolbutton"><i class="fas fa-cloud-upload-alt"></i></div>
+                <div id="loadFirewall" class="toolbutton"><i class="fas fa-cloud-download-alt"></i></div>
                 <div id="compile" class="toolbutton"><i class="fas fa-cogs"></i></div>
             </footer>
             <div id="helpbox">            
                 <i class="fas fa-question"></i>
                 <div id="helptext"></div>
             </div>
-        </div>
-        <div id="messageWrapper">
-            <div id="message">
-                <h2 id="messageHeader"></h2>
-                <div id="messageText"></div>
-                <div id="hideMessage" class="toolbutton"><i class="fas fa-check"></i></div>
+            <div id="messageWrapper">
+                <div id="message">
+                    <h2 id="messageHeader"></h2>
+                    <div id="messageText"></div>
+                    <div id="hideMessage" class="toolbutton"><i class="fas fa-check"></i></div>
+                </div>
             </div>
-        </div>
+            <textarea rows="50" class="script" id="script"></textarea>
+            <nav>
+                <div id="saveScript" class="toolbutton"><i class="fas fa-save"></i></div>
+                <div id="scriptClipboard" class="toolbutton"><i class="fas fa-clipboard"></i></div>
+                <div id="closeScript" class="toolbutton"><i class="fas fa-window-close"></i></div>
+            </nav>         
+        </div>        
     </body>
 </html>
