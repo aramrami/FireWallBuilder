@@ -2,3 +2,7 @@
 static/webfonts/
 
 static/css/fontawesome-all\.min\.css
+
+modules/__pycache__/
+
+*.db
