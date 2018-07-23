@@ -26,4 +26,3 @@ class Connection():
 
 if __name__ == "__main__":
     buildDatabase( "../database/firewall.db", "../database/dbstructure.sql" )
-    

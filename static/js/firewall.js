@@ -201,6 +201,22 @@ function sendFireWall(){
     request.send( json );
 }
 
+function saveFirewall(){
+    let list = []
+    rules.forEach( element => {
+        list.push( element.toLeightWeightObject() );
+    } );
+    let json = JSON.stringify( list );
+    let request = new XMLHttpRequest();
+    
+    request.open( "POST", "./save", true );
+    request.setRequestHeader( "Content-type", "application/json" );
+    request.onload = () => {
+        displayMessage( request.responseText, [] );
+    };
+    request.send( json );
+}
+
 function switchMainAndScript( script = null ){
     //console.log( script );
     let mainVisibility   = "block";
@@ -303,6 +319,7 @@ const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
     document.getElementById( "ports" ).addEventListener( "keyup", event => {
         validate( event.target, inputs["PORTS"] );
     } );
+    document.getElementById( "saveFirewall" ).onclick = saveFirewall;
     document.getElementById( "hideMessage" ).onclick = hideMessage;
     document.getElementById( "saveScript" ).onclick = downloadScript;
     document.getElementById( "scriptClipboard" ).onclick = scriptToClipboard;

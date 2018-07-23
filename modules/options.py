@@ -3,9 +3,6 @@ from modules.sanitizer import Patterns
 
 def mapJsonToRule( data ):
   rules = [ Rule( rule["direction"], rule["protocol"], rule["ipFrom"], rule["ipTo"], rule["ports"], rule["comment"] ) for rule in data ]
-  for rule in rules:
-    for command in rule.toCommandString():      
-      print( command )
   return rules
 
 class Direction( Flag ):
@@ -21,6 +18,16 @@ class Direction( Flag ):
       yield "I"
     if self & Direction.OUTPUT is Direction.OUTPUT:
       yield "O"
+
+  def getBitmask( self ):
+    bitmask = 0
+    if Direction.FORWARD & self == Direction.FORWARD:
+      bitmask += 1
+    if Direction.INPUT & self == Direction.INPUT:
+      bitmask += 2
+    if Direction.OUTPUT & self == Direction.OUTPUT:
+      bitmask += 4 
+    return bitmask
 
   @staticmethod
   def build( number ):
@@ -46,6 +53,16 @@ class Protocol( Flag ):
       yield "U"
     if self & Protocol.ICMP is Protocol.ICMP:
       yield "I"
+
+  def getBitmask( self ):
+    bitmask = 0
+    if Protocol.TCP & self == Protocol.TCP:
+      bitmask += 1
+    if Protocol.UDP & self == Protocol.UDP:
+      bitmask += 2
+    if Protocol.ICMP & self == Protocol.ICMP:
+      bitmask += 4
+    return bitmask
 
   @staticmethod
   def build( number ):
@@ -81,11 +98,28 @@ class Rule:
       for d_flag in self.directions.toCommandString():
         yield command % ( d_flag, p_flag, multiport, self.ip_from, self.ip_to, dport, self.ports )
 
+  def insert( self, firewallID, cursor ):
+    cursor.execute( "INSERT INTO Rules (directionBitmask,protocolBitmask,ipFrom,ipTo,ports,comment,firewallID) VALUES (?,?,?,?,?,?,?)", ( self.directions.getBitmask(), self.protocols.getBitmask(), self.ip_from, self.ip_to, self.ports, self.comment, firewallID ) )
+
   def __str__( self ):
     output = "# %s\n" % self.comment
     for command in self.toCommandString():
       output += command
     return output
+
+class Firewall():
+  
+  def __init__( self, rules ):
+    self.title        = None
+    self.creationDate = None
+    self.rules        = rules
+  
+  def insert( self, cursor ):
+    cursor.execute( "INSERT INTO Firewalls (title,creationDate) VALUES (?,?);", ( self.title, self.creationDate ) )
+    cursor.execute( "SELECT MAX(firewallID) FROM Firewalls;" )
+    currentID = cursor.fetchone()[0]
+    for rule in self.rules:
+      rule.insert( currentID, cursor )
   
 def loadTemplate( url ):
   buffer = ""
@@ -103,5 +137,5 @@ def buildFirewall( rules ):
   return "%s\n%s\n%s" % ( prefix, custom, suffix )
 
 if __name__ == "__main__":
-  flag = Direction.FORWARD | Direction.INPUT
-  print( buildFirewall( [] ) )
+  t = Direction.INPUT | Direction.OUTPUT | Direction.FORWARD
+  print( t.getBitmask() )
