@@ -10,15 +10,15 @@ class Patterns( Enum ):
 
 def isValidRule( rules ):  
   for rule in rules:
-    if Patterns.PORTS.value.search( rule.ports ) is None:
+    if Patterns.PORTS.value.search( rule['ports'] ) is None:
       return False
-    if Patterns.IP.value.search( rule.ip_from ) is None:
+    if Patterns.IP.value.search( rule['ip_from'] ) is None:
       return False
-    if Patterns.IP.value.search( rule.ip_to ) is None:
+    if Patterns.IP.value.search( rule['ip_to'] ) is None:
       return False
-    if Patterns.BITMASK.value.search( str( rule.directions.value ) ) is None:
+    if Patterns.BITMASK.value.search( str( rule['directions'].value ) ) is None:
       return False 
-    if Patterns.BITMASK.value.search( str( rule.protocols.value ) ) is None:
+    if Patterns.BITMASK.value.search( str( rule['protocols'].value ) ) is None:
       return False     
   return True
 

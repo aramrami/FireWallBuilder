@@ -2,6 +2,7 @@ from flask import render_template, Flask, request, abort, make_response
 from modules.options import mapJsonToRule, buildFirewall, Firewall
 from modules.sanitizer import isValidRule
 from modules.dbhandler import buildDatabase, Connection
+import json
 
 app = Flask(__name__)
 db  = "./database/firewall.db"
@@ -42,15 +43,18 @@ def save():
     if isValidRule( rules ):
         if 0 >= len( rules ):
             return "There has to be at least one rule"
-        firewall = Firewall( rules )
+        firewall = Firewall( "Testtitile", "0000-00-00", rules )
         with Connection( db ) as cursor:
             firewall.insert( cursor )
     return "Firewall saved"
 
 @ContentLength( 128 )
 @app.route( "/load" )
-def load():
-    return "TODO"
+def showSavedFirewalls():
+    firewall = []
+    with Connection( db ) as cursor:
+        firewall = Firewall.fetchAll( cursor )
+    return json.dumps( firewall )
 
 if __name__ == "__main__":
     #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024

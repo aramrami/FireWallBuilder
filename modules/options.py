@@ -1,5 +1,6 @@
 from enum import Flag, auto
 from modules.sanitizer import Patterns
+import json
 
 def mapJsonToRule( data ):
   rules = [ Rule( rule["direction"], rule["protocol"], rule["ipFrom"], rule["ipTo"], rule["ports"], rule["comment"] ) for rule in data ]
@@ -75,51 +76,69 @@ class Protocol( Flag ):
       protocol |= Protocol.ICMP
     return protocol
 
-class Rule:
+class Rule( dict ):
 
   def __init__( self, directions, protocols, ip_from, ip_to, ports, comment ):
-    self.directions = Direction.build( directions )
-    self.protocols  = Protocol.build( protocols )
-    self.ip_from    = ip_from
-    self.ip_to      = ip_to
-    self.comment    = comment
-    self.ports      = ports
+    dict.__init__( self, directions=Direction.build( directions ), protocols=Protocol.build( protocols ), ip_from=ip_from, ip_to=ip_to, ports=ports, comment=comment )
+    #self.directions = Direction.build( directions )
+    #self.protocols  = Protocol.build( protocols )
+    #self.ip_from    = ip_from
+    #self.ip_to      = ip_to
+    #self.comment    = comment
+    #self.ports      = ports
 
   def toCommandString( self ):
     multiport = ""
     dport     = "dport"
     command   = "$%s%s %s -s %s -d %s --%s %s $R\n"
     
-    if Patterns.COMMA.value.search( self.ports ):
+    if Patterns.COMMA.value.search( self['ports'] ):
       multiport = "$MP"
       dport     = "dports"
     
-    for p_flag in self.protocols.toCommandString():
-      for d_flag in self.directions.toCommandString():
-        yield command % ( d_flag, p_flag, multiport, self.ip_from, self.ip_to, dport, self.ports )
+    for p_flag in self['protocols'].toCommandString():
+      for d_flag in self['directions'].toCommandString():
+        yield command % ( d_flag, p_flag, multiport, self['ip_from'], self['ip_to'], dport, self['ports'] )
 
   def insert( self, firewallID, cursor ):
-    cursor.execute( "INSERT INTO Rules (directionBitmask,protocolBitmask,ipFrom,ipTo,ports,comment,firewallID) VALUES (?,?,?,?,?,?,?)", ( self.directions.getBitmask(), self.protocols.getBitmask(), self.ip_from, self.ip_to, self.ports, self.comment, firewallID ) )
+    cursor.execute( "INSERT INTO Rules (directionBitmask,protocolBitmask,ipFrom,ipTo,ports,comment,firewallID) VALUES (?,?,?,?,?,?,?)", ( self['directions'].getBitmask(), self['protocols'].getBitmask(), self['ip_from'], self['ip_to'], self['ports'], self['comment'], firewallID ) )
 
   def __str__( self ):
-    output = "# %s\n" % self.comment
+    output = "# %s\n" % self['comment']
     for command in self.toCommandString():
       output += command
     return output
 
-class Firewall():
+class Firewall( dict ):
   
-  def __init__( self, rules ):
-    self.title        = None
-    self.creationDate = None
-    self.rules        = rules
+  def __init__( self, title, creationDate, rules, id=0 ):
+    dict.__init__( self, title=title, creationDate=creationDate, rules=rules, id=id )
+    #self.title        = None
+    #self.creationDate = None
+    #self.rules        = rules
   
   def insert( self, cursor ):
-    cursor.execute( "INSERT INTO Firewalls (title,creationDate) VALUES (?,?);", ( self.title, self.creationDate ) )
+    cursor.execute( "INSERT INTO Firewalls (title,creationDate) VALUES (?,?);", ( self['title'], self['creationDate'] ) )
     cursor.execute( "SELECT MAX(firewallID) FROM Firewalls;" )
     currentID = cursor.fetchone()[0]
-    for rule in self.rules:
+    for rule in self['rules']:
       rule.insert( currentID, cursor )
+  
+  def toJSON( self ):
+    return json.dumps( self, default=lambda obj: obj.__dict__, sort_keys=True, indent=4 )
+  
+  def fetchRules( self, cursor ):
+    cursor.execute( "SELECT * FROM Rules WHERE firewallID = ?;", ( self['id'], ) )
+    for row in cursor:
+      self['rules'].append( Rule( row[1], row[2], row[3], row[4], row[5], row[6] ) )
+  
+  @staticmethod
+  def fetchAll( cursor ):
+    firewalls = []
+    cursor.execute( "SELECT * FROM Firewalls;" )
+    for row in cursor:
+      firewalls.append( Firewall( row[1], row[2], [], id=row[0] ) )
+    return firewalls
   
 def loadTemplate( url ):
   buffer = ""

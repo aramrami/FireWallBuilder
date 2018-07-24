@@ -136,6 +136,46 @@ class Rule{
     }
 }
 
+class FirewallTable{
+    constructor( json ){
+        this.firewalls = JSON.parse( json );
+    }
+    toHTML(){
+        let table = document.createElement( "table" );
+        let headrow = document.createElement( "tr" );
+        
+        table.appendChild( headrow );
+        
+        for ( let headdata of [ "Title","Creation-Date" ] ) {
+            let tablehead = document.createElement( "th" );
+            tablehead.innerHTML = headdata;
+            headrow.appendChild( tablehead );
+        }
+        this.firewalls.forEach( element => {
+            let row      = document.createElement( "tr" );
+            let title    = document.createElement( "td" );
+            let date     = document.createElement( "td" );
+            let download = document.createElement( "td" );
+            let deletion = document.createElement( "td" );
+                                    
+            title.innerHTML = element["title"];
+            date.innerHTML = element["creationDate"];
+            download.innerHTML = "<i class='fas fa-cloud-download-alt'></i>";
+            download.classList.add( "deletebutton" );
+            deletion.innerHTML = "<i class='fas fa-trash-alt'></i>";
+            deletion.classList.add( "deletebutton" );
+            
+            row.appendChild( title );
+            row.appendChild( date );
+            row.appendChild( download );
+            row.appendChild( deletion );
+            table.appendChild( row );
+        } );
+        
+        return table;        
+    }
+}
+
 function createRule(){
     return new Rule(
         buttonGroupDirections.bitmask.getValue(),
@@ -217,6 +257,16 @@ function saveFirewall(){
     request.send( json );
 }
 
+function showFirewalls(){
+    let request = new XMLHttpRequest();
+    
+    request.open( "GET", "./load", true );
+    request.onload = () => {
+        displayMessage( "Saved Firewalls", new FirewallTable( request.responseText ).toHTML() );
+    };
+    request.send( null );
+}
+
 function switchMainAndScript( script = null ){
     //console.log( script );
     let mainVisibility   = "block";
@@ -279,14 +329,18 @@ function isValidRule(){
 }
 
 function displayMessage( header, texts ){
-    let message = "";
+    if ( Array.isArray( texts ) ){
+        let message = "";
+        
+        for( let text of texts ){
+            message += `${text}<br>`;
+        }
+        document.getElementById( "messageText" ).innerHTML = message;
+    } else {
+        document.getElementById( "messageText" ).appendChild( texts );
+    }    
     
-    for( let text of texts ){
-        message += `${text}<br>`;
-    }
-    
-    document.getElementById( "messageHeader" ).innerHTML = header;
-    document.getElementById( "messageText" ).innerHTML = message;
+    document.getElementById( "messageHeader" ).innerHTML = header;    
     document.getElementById( "messageWrapper" ).style.visibility = "visible";
 }
 
@@ -320,6 +374,7 @@ const buttonGroupProtocols = new BitMaskButtonGroup( "group_protocols" );
         validate( event.target, inputs["PORTS"] );
     } );
     document.getElementById( "saveFirewall" ).onclick = saveFirewall;
+    document.getElementById( "loadFirewall" ).onclick = showFirewalls;
     document.getElementById( "hideMessage" ).onclick = hideMessage;
     document.getElementById( "saveScript" ).onclick = downloadScript;
     document.getElementById( "scriptClipboard" ).onclick = scriptToClipboard;
