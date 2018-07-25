@@ -174,6 +174,19 @@ class FirewallTable{
         
         return table;        
     }
+    load( domItem, firewallID ){
+        domItem.addEventListener( "click", event => {
+            let XHttpRequest = new XHttpRequest();
+            request.open( "GET", `./load/?fid=${firewallID}`, true );
+            request.onload = () => {
+                loadFirewall( request.responseText );
+            };
+            request.send( null );
+        } );
+    }
+    remove(){
+        //TODO
+    }
 }
 
 function createRule(){
@@ -265,6 +278,10 @@ function showFirewalls(){
         displayMessage( "Saved Firewalls", new FirewallTable( request.responseText ).toHTML() );
     };
     request.send( null );
+}
+
+function loadFirewall( data ){
+    //TODO
 }
 
 function switchMainAndScript( script = null ){

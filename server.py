@@ -48,13 +48,19 @@ def save():
             firewall.insert( cursor )
     return "Firewall saved"
 
-@ContentLength( 128 )
+@ContentLength( 64 )
 @app.route( "/load" )
 def showSavedFirewalls():
     firewall = []
     with Connection( db ) as cursor:
         firewall = Firewall.fetchAll( cursor )
     return json.dumps( firewall )
+
+@ContentLength( 64 )
+@app.route( "/load/<>", methods=["GET"] )
+def loadFirewall():
+    #TODO
+    pass
 
 if __name__ == "__main__":
     #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
