@@ -1,6 +1,6 @@
 from flask import render_template, Flask, request, abort, make_response
 from modules.options import mapJsonToRule, buildFirewall, Firewall
-from modules.sanitizer import isValidRule
+from modules.sanitizer import isValidRule, Patterns
 from modules.dbhandler import buildDatabase, Connection
 import json
 
@@ -49,7 +49,7 @@ def save():
     return "Firewall saved"
 
 @ContentLength( 64 )
-@app.route( "/load" )
+@app.route( "/show" )
 def showSavedFirewalls():
     firewall = []
     with Connection( db ) as cursor:
@@ -57,12 +57,23 @@ def showSavedFirewalls():
     return json.dumps( firewall )
 
 @ContentLength( 64 )
-@app.route( "/load/<>", methods=["GET"] )
-def loadFirewall():
-    #TODO
-    pass
+@app.route( "/load/<fid>", methods=["GET"] )
+def loadFirewall( fid ):
+    if Patterns.ID.value.search( fid ) is None:
+        abort( 500 )
+    with Connection( db ) as cursor:
+        return Firewall.fetchById( fid, cursor )
+    abort( 500 )
+
+@ContentLength( 64 )
+@app.route( "/remove/<fid>", methods=["GET"] )
+def removeFirewall( fid ):
+    if Patterns.ID.value.search( fid ) is None:
+        abort( 500 )
+    # TODO
+    return "TODO"
 
 if __name__ == "__main__":
     #app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024
     buildDatabase( db, "./database/dbstructure.sql" )
-    app.run()
+    app.run( host= '0.0.0.0' )

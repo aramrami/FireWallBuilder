@@ -7,6 +7,7 @@ class Patterns( Enum ):
   BITMASK  = re.compile( "^[0-7]$" )
   COMMENTS = re.compile( "^$" )
   COMMA    = re.compile( "," )
+  ID       = re.compile( "[1-9][0-9]{0,7}" )
 
 def isValidRule( rules ):  
   for rule in rules:

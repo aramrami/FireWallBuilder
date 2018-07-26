@@ -30,6 +30,13 @@ class Direction( Flag ):
       bitmask += 4 
     return bitmask
 
+  def __next__( self ):
+    yield self.getBitmask()
+    raise StopIteration()
+  
+  def __iter__( self ):
+    return self
+
   @staticmethod
   def build( number ):
     direction = Direction.NONE
@@ -64,6 +71,13 @@ class Protocol( Flag ):
     if Protocol.ICMP & self == Protocol.ICMP:
       bitmask += 4
     return bitmask
+
+  def __next__( self ):
+    yield self.getBitmask()
+    raise StopIteration()
+  
+  def __iter__( self ):
+    return self
 
   @staticmethod
   def build( number ):
@@ -139,6 +153,16 @@ class Firewall( dict ):
     for row in cursor:
       firewalls.append( Firewall( row[1], row[2], [], id=row[0] ) )
     return firewalls
+  
+  @staticmethod
+  def fetchById( id, cursor ):
+    cursor.execute( "SELECT * FROM Firewalls WHERE firewallID = ?;", ( id, ) )
+    result = cursor.fetchone()
+    if result is not None:
+      firewall = Firewall( result[1], result[2], [], id=result[0] )
+      firewall.fetchRules( cursor )
+      return firewall.toJSON()
+    return "{}"
   
 def loadTemplate( url ):
   buffer = ""

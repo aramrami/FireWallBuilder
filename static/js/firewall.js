@@ -162,8 +162,11 @@ class FirewallTable{
             date.innerHTML = element["creationDate"];
             download.innerHTML = "<i class='fas fa-cloud-download-alt'></i>";
             download.classList.add( "deletebutton" );
+            this.load( download, element["id"] );
+            
             deletion.innerHTML = "<i class='fas fa-trash-alt'></i>";
             deletion.classList.add( "deletebutton" );
+            this.remove( deletion, element["id"] );
             
             row.appendChild( title );
             row.appendChild( date );
@@ -176,16 +179,24 @@ class FirewallTable{
     }
     load( domItem, firewallID ){
         domItem.addEventListener( "click", event => {
-            let XHttpRequest = new XHttpRequest();
-            request.open( "GET", `./load/?fid=${firewallID}`, true );
+            let request = new XMLHttpRequest();
+            request.open( "GET", `./load/${firewallID}`, true );
             request.onload = () => {
                 loadFirewall( request.responseText );
             };
             request.send( null );
         } );
     }
-    remove(){
+    remove( domItem, firewallID ){
         //TODO
+        domItem.addEventListener( "click", event => {
+            let request = new XMLHttpRequest();
+            request.open( "GET", `./remove/${firewallID}`, true );
+            request.onload = () => {
+                hideMessage();
+            };
+            request.send( null );
+        } );
     }
 }
 
@@ -273,7 +284,7 @@ function saveFirewall(){
 function showFirewalls(){
     let request = new XMLHttpRequest();
     
-    request.open( "GET", "./load", true );
+    request.open( "GET", "./show", true );
     request.onload = () => {
         displayMessage( "Saved Firewalls", new FirewallTable( request.responseText ).toHTML() );
     };
@@ -281,7 +292,8 @@ function showFirewalls(){
 }
 
 function loadFirewall( data ){
-    //TODO
+    console.log( data );
+    // TODO
 }
 
 function switchMainAndScript( script = null ){
