@@ -90,16 +90,16 @@ class Protocol( Flag ):
       protocol |= Protocol.ICMP
     return protocol
 
-class Rule( dict ):
+class Rule():
 
   def __init__( self, directions, protocols, ip_from, ip_to, ports, comment ):
-    dict.__init__( self, directions=Direction.build( directions ), protocols=Protocol.build( protocols ), ip_from=ip_from, ip_to=ip_to, ports=ports, comment=comment )
-    #self.directions = Direction.build( directions )
-    #self.protocols  = Protocol.build( protocols )
-    #self.ip_from    = ip_from
-    #self.ip_to      = ip_to
-    #self.comment    = comment
-    #self.ports      = ports
+    #dict.__init__( self, directions=Direction.build( directions ), protocols=Protocol.build( protocols ), ip_from=ip_from, ip_to=ip_to, ports=ports, comment=comment )
+    self.directions = Direction.build( directions )
+    self.protocols  = Protocol.build( protocols )
+    self.ip_from    = ip_from
+    self.ip_to      = ip_to
+    self.comment    = comment
+    self.ports      = ports
 
   def toCommandString( self ):
     multiport = ""
@@ -122,14 +122,18 @@ class Rule( dict ):
     for command in self.toCommandString():
       output += command
     return output
+  
+  def toJSON( self ):
+    return '{"directions":%d,"protocols":%d,"ip_from":"%s","ip_to":"%s","ports":"%s","comment":"%s"}' % ( self.directions.getBitmask(), self.protocols.getBitmask(), self.ip_from, self.ip_to, self.ports, self.comment )
 
 class Firewall( dict ):
   
   def __init__( self, title, creationDate, rules, id=0 ):
     dict.__init__( self, title=title, creationDate=creationDate, rules=rules, id=id )
-    #self.title        = None
-    #self.creationDate = None
+    #self.title        = title
+    #self.creationDate = creationDate
     #self.rules        = rules
+    #self.id           = id
   
   def insert( self, cursor ):
     cursor.execute( "INSERT INTO Firewalls (title,creationDate) VALUES (?,?);", ( self['title'], self['creationDate'] ) )
@@ -139,7 +143,14 @@ class Firewall( dict ):
       rule.insert( currentID, cursor )
   
   def toJSON( self ):
-    return json.dumps( self, default=lambda obj: obj.__dict__, sort_keys=True, indent=4 )
+    rulesJSON = "["
+    for rule in self["rules"]:
+      rulesJSON += "%s," % rule.toJSON()
+    if len( rulesJSON ) > 1:
+      rulesJSON = rulesJSON[:-1]
+    rulesJSON += "]"
+    return '{"id":%d,"title":"%s","creationDate":"%s","rules":%s}' % ( self["id"], self["title"], self["creationDate"], rulesJSON )
+    #return json.dumps( self, default=lambda obj: obj.__dict__, sort_keys=True, indent=4 )
   
   def fetchRules( self, cursor ):
     cursor.execute( "SELECT * FROM Rules WHERE firewallID = ?;", ( self['id'], ) )
