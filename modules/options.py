@@ -106,19 +106,19 @@ class Rule():
     dport     = "dport"
     command   = "$%s%s %s -s %s -d %s --%s %s $R\n"
     
-    if Patterns.COMMA.value.search( self['ports'] ):
+    if Patterns.COMMA.value.search( self.ports ):
       multiport = "$MP"
       dport     = "dports"
     
-    for p_flag in self['protocols'].toCommandString():
-      for d_flag in self['directions'].toCommandString():
-        yield command % ( d_flag, p_flag, multiport, self['ip_from'], self['ip_to'], dport, self['ports'] )
+    for p_flag in self.protocols.toCommandString():
+      for d_flag in self.directions.toCommandString():
+        yield command % ( d_flag, p_flag, multiport, self.ip_from, self.ip_to, dport, self.ports )
 
   def insert( self, firewallID, cursor ):
-    cursor.execute( "INSERT INTO Rules (directionBitmask,protocolBitmask,ipFrom,ipTo,ports,comment,firewallID) VALUES (?,?,?,?,?,?,?)", ( self['directions'].getBitmask(), self['protocols'].getBitmask(), self['ip_from'], self['ip_to'], self['ports'], self['comment'], firewallID ) )
+    cursor.execute( "INSERT INTO Rules (directionBitmask,protocolBitmask,ipFrom,ipTo,ports,comment,firewallID) VALUES (?,?,?,?,?,?,?)", ( self.directions.getBitmask(), self.protocols.getBitmask(), self.ip_from, self.ip_to, self.ports, self.comment, firewallID ) )
 
   def __str__( self ):
-    output = "# %s\n" % self['comment']
+    output = "# %s\n" % self.comment
     for command in self.toCommandString():
       output += command
     return output
