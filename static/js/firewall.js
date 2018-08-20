@@ -292,8 +292,18 @@ function showFirewalls(){
 }
 
 function loadFirewall( data ){
-    console.log( data );
-    // TODO
+    let json = JSON.parse( data );
+    console.log( json );
+    rules.length = 0;
+    
+    for ( let rule of json["rules"] ){
+        // direction, protocol, ipFrom, ipTo, ports, comment
+        rules.push( new Rule( rule["directions"], rule["protocols"], rule["ip_from"], rule["ip_to"], rule["ports"], rule["comment"] ) );
+    }
+    
+    clearTable( document.querySelector( "table" ) );
+    buildTable();
+    hideMessage();
 }
 
 function switchMainAndScript( script = null ){
@@ -366,6 +376,7 @@ function displayMessage( header, texts ){
         }
         document.getElementById( "messageText" ).innerHTML = message;
     } else {
+        document.getElementById( "messageText" ).innerHTML = "";
         document.getElementById( "messageText" ).appendChild( texts );
     }    
     
