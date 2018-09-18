@@ -1,5 +1,8 @@
 # FireWallBuilder
 A wep application for building simple iptables firewalls.
+
+[App Preview](doc/mainview.png)
+
 ## Prerequisites
 * Python3
 * The Python framework Flask
